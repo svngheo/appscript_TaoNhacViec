@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Tạo nhắc việc</h2>
+    <label for="title">Tiêu đề</label>
+    <input type="text" id="title" placeholder="Nhập tiêu đề">
+
+    <label for="description">Mô tả</label>
+    <textarea id="description" placeholder="Nhập mô tả"></textarea>
+
+    <label for="date">Ngày</label>
+    <input type="date" id="date">
+
+    <label for="time">Thời gian</label>
+    <input type="time" id="time">
+
+    <label for="emails">Danh sách email (cách nhau bằng dấu phẩy)</label>
+    <textarea id="emails" placeholder="Nhập email"></textarea>
+
+    <button id="submitBtn" onclick="createReminder()">Tạo nhắc việc</button>
+    <div id="resultMessage"></div>
+  </div>
+
+  <script>
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const day = ("0" + date.getDate()).slice(-2);
+      const month = ("0" + (date.getMonth() + 1)).slice(-2);
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    function createReminder() {
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+      const emails = document.getElementById('emails').value;
+
+      if (title && description && date && time && emails) {
+        const formattedDate = formatDate(date);
+        
+        google.script.run.withSuccessHandler(function(response) {
+          document.getElementById('resultMessage').innerText = response;
+        }).addReminder({
+          title: title,
+          description: description,
+          date: formattedDate,  // Sử dụng định dạng dd/MM/yyyy
+          time: time,
+          emails: emails
+        });
+      } else {
+        alert('Vui lòng điền đầy đủ thông tin.');
+      }
+    }
+  </script>
+</body>
+</html>
